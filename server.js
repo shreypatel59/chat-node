@@ -1,33 +1,54 @@
-const express = require("express");
-const app = express();
-const http = require("http");
-const server = http.createServer(app);
-const { Server } = require("socket.io");
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Chat App</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="chat-container">
+    <ul id="messages"></ul>
+    <form id="form" action="">
+      <input id="input" autocomplete="off" placeholder="Type a message..." />
+      <button id="send">Send</button>
+    </form>
+  </div>
 
-// Setup socket.io with CORS allowed
-const io = new Server(server, {
-  cors: { origin: "*" }
-});
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io(); // works on Render
 
-// Serve static files from "public" folder
-app.use(express.static("public"));
+    const form = document.getElementById("form");
+    const input = document.getElementById("input");
+    const messages = document.getElementById("messages");
 
-// Handle socket connections
-io.on("connection", (socket) => {
-  console.log("✅ A user connected");
+    // Prompt for username
+    const username = prompt("Please enter your username:");
+    if (!username) {
+        alert("Username is required to chat.");
+        window.location.reload();
+    }
 
-  socket.on("chat message", (msg) => {
-    console.log("💬 Message received: " + msg);
-    io.emit("chat message", msg); // broadcast to all users
-  });
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+      if (input.value) {
+        // Send an object with both username and message
+        const chatMessage = {
+          username: username,
+          text: input.value
+        };
+        socket.emit("chat message", chatMessage);
+        input.value = "";
+      }
+    });
 
-  socket.on("disconnect", () => {
-    console.log("❌ A user disconnected");
-  });
-});
-
-// Use Render's PORT or 3000 locally
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-});
+    socket.on("chat message", function(msg) {
+      const item = document.createElement("li");
+      // Display both username and message
+      item.textContent = `${msg.username}: ${msg.text}`;
+      messages.appendChild(item);
+      messages.scrollTop = messages.scrollHeight;
+    });
+  </script>
+</body>
+</html>
