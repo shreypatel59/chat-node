@@ -17,10 +17,8 @@ io.on("connection", (socket) => {
   console.log("✅ A user connected");
 
   socket.on("chat message", (msg) => {
-    // msg is now an object: { username: "...", text: "..." }
-    console.log(`💬 Message from ${msg.username}: ${msg.text}`);
-    // Broadcast the entire message object
-    io.emit("chat message", msg);
+    console.log("💬 Message received: " + msg);
+    io.emit("chat message", msg); // broadcast to all users
   });
 
   socket.on("disconnect", () => {
