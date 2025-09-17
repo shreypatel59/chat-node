@@ -1,6 +1,7 @@
+/* General body */
 body {
-  font-family: Arial, sans-serif;
-  background: #f5f5f5;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f0f2f5;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -8,56 +9,107 @@ body {
   margin: 0;
 }
 
+/* Chat container */
 #chat-container {
   width: 400px;
   height: 600px;
-  background: white;
+  background: #fff;
   border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
 
+/* Messages list */
 #messages {
   list-style-type: none;
   margin: 0;
   padding: 15px;
   flex: 1;
   overflow-y: auto;
-  background: #e9ecef;
+  background: #e5ddd5;
+  display: flex;
+  flex-direction: column;
 }
 
+/* Individual messages */
 #messages li {
-  padding: 10px;
+  padding: 10px 14px;
   margin: 5px 0;
-  border-radius: 5px;
-  background: #007bff;
-  color: white;
+  border-radius: 15px;
   max-width: 70%;
+  word-wrap: break-word;
+  position: relative;
+  display: inline-block;
+  font-size: 0.95em;
 }
 
+/* Messages sent by the user */
+#messages li.self {
+  background: #dcf8c6;
+  color: #000;
+  align-self: flex-end;
+  border-bottom-right-radius: 0;
+}
+
+/* Messages received */
+#messages li.other {
+  background: #fff;
+  color: #000;
+  align-self: flex-start;
+  border-bottom-left-radius: 0;
+}
+
+/* Username above messages */
+#messages li .username {
+  font-weight: bold;
+  font-size: 0.8em;
+  margin-bottom: 3px;
+  display: block;
+}
+
+/* Form for input */
 #form {
   display: flex;
   padding: 10px;
   border-top: 1px solid #ddd;
-  background: white;
+  background: #f7f7f7;
 }
 
+/* Message input */
 #input {
   flex: 1;
-  padding: 10px;
+  padding: 10px 15px;
   border: 1px solid #ddd;
   border-radius: 20px;
   outline: none;
+  font-size: 1em;
 }
 
+/* Send button */
 #send {
   background: #007bff;
   color: white;
   border: none;
-  padding: 10px 16px;
+  padding: 10px 18px;
   margin-left: 10px;
-  border-radius: 20px;
+  border-radius: 50%;
   cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s;
+}
+
+#send:hover {
+  background: #0056b3;
+}
+
+/* Scrollbar styling */
+#messages::-webkit-scrollbar {
+  width: 6px;
+}
+
+#messages::-webkit-scrollbar-thumb {
+  background-color: rgba(0,0,0,0.2);
+  border-radius: 3px;
 }
