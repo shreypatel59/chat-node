@@ -14,26 +14,38 @@
     </form>
   </div>
 
-  <!-- Load socket.io from server -->
   <script src="/socket.io/socket.io.js"></script>
   <script>
-    const socket = io(); // ✅ works on Render
+    const socket = io();
 
     const form = document.getElementById("form");
     const input = document.getElementById("input");
     const messages = document.getElementById("messages");
 
+    // This is the code that asks for the username
+    const username = prompt("Please enter your username:");
+    if (!username) {
+        alert("Username is required to chat.");
+        window.location.reload();
+    }
+
     form.addEventListener("submit", function(e) {
       e.preventDefault();
       if (input.value) {
-        socket.emit("chat message", input.value);
+        // Send an object with both username and message
+        const chatMessage = {
+          username: username,
+          text: input.value
+        };
+        socket.emit("chat message", chatMessage);
         input.value = "";
       }
     });
 
     socket.on("chat message", function(msg) {
       const item = document.createElement("li");
-      item.textContent = msg;
+      // Display both username and message
+      item.textContent = `${msg.username}: ${msg.text}`;
       messages.appendChild(item);
       messages.scrollTop = messages.scrollHeight;
     });
