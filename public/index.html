@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Chat App</title>
+  <style>
+    body { font-family: Arial; margin: 20px; }
+    #messages { height: 60vh; overflow:auto; border:1px solid #ddd; padding:10px; }
+    #form { display:flex; margin-top:10px; }
+    #input { flex:1; padding:5px; }
+  </style>
+</head>
+<body>
+  <h3>Real-time Chat 🚀</h3>
+  <div id="messages"></div>
+  <form id="form">
+    <input id="input" autocomplete="off" placeholder="Type message...">
+    <button>Send</button>
+  </form>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    const messagesDiv = document.getElementById("messages");
+    const form = document.getElementById("form");
+    const input = document.getElementById("input");
+
+    let username = prompt("Enter your name") || "Anonymous";
+    socket.emit("join", username);
+
+    // load history
+    fetch("/messages").then(r => r.json()).then(data => {
+      data.forEach(m => appendMessage(`${m.username}: ${m.text}`));
+    });
+
+    socket.on("newMessage", (m) => {
+      appendMessage(`${m.username}: ${m.text}`);
+    });
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const msg = input.value.trim();
+      if (!msg) return;
+      socket.emit("sendMessage", { username, message: msg });
+      input.value = "";
+    });
+
+    function appendMessage(txt) {
+      const p = document.createElement("p");
+      p.textContent = txt;
+      messagesDiv.appendChild(p);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+  </script>
+</body>
+</html>
