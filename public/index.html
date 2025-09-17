@@ -1,56 +1,42 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
   <title>Chat App</title>
-  <style>
-    body { font-family: Arial; margin: 20px; }
-    #messages { height: 60vh; overflow:auto; border:1px solid #ddd; padding:10px; }
-    #form { display:flex; margin-top:10px; }
-    #input { flex:1; padding:5px; }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h3>Real-time Chat 🚀</h3>
-  <div id="messages"></div>
-  <form id="form">
-    <input id="input" autocomplete="off" placeholder="Type message...">
-    <button>Send</button>
-  </form>
+  <div id="chat-container">
+    <ul id="messages"></ul>
+    <form id="form" action="">
+      <input id="input" autocomplete="off" placeholder="Type a message..." />
+      <button id="send">Send</button>
+    </form>
+  </div>
 
+  <!-- Load socket.io from server -->
   <script src="/socket.io/socket.io.js"></script>
   <script>
-    const socket = io();
-    const messagesDiv = document.getElementById("messages");
+    const socket = io(); // ✅ works on Render
+
     const form = document.getElementById("form");
     const input = document.getElementById("input");
+    const messages = document.getElementById("messages");
 
-    let username = prompt("Enter your name") || "Anonymous";
-    socket.emit("join", username);
-
-    // load history
-    fetch("/messages").then(r => r.json()).then(data => {
-      data.forEach(m => appendMessage(`${m.username}: ${m.text}`));
-    });
-
-    socket.on("newMessage", (m) => {
-      appendMessage(`${m.username}: ${m.text}`);
-    });
-
-    form.addEventListener("submit", (e) => {
+    form.addEventListener("submit", function(e) {
       e.preventDefault();
-      const msg = input.value.trim();
-      if (!msg) return;
-      socket.emit("sendMessage", { username, message: msg });
-      input.value = "";
+      if (input.value) {
+        socket.emit("chat message", input.value);
+        input.value = "";
+      }
     });
 
-    function appendMessage(txt) {
-      const p = document.createElement("p");
-      p.textContent = txt;
-      messagesDiv.appendChild(p);
-      messagesDiv.scrollTop = messagesDiv.scrollHeight;
-    }
+    socket.on("chat message", function(msg) {
+      const item = document.createElement("li");
+      item.textContent = msg;
+      messages.appendChild(item);
+      messages.scrollTop = messages.scrollHeight;
+    });
   </script>
 </body>
 </html>

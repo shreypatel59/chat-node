@@ -1,52 +1,33 @@
-require("dotenv").config();
 const express = require("express");
-const http = require("http");
-const { Server } = require("socket.io");
-const mongoose = require("mongoose");
-const path = require("path");
-const cors = require("cors");
-
-const Message = require("./models/Message");
-
 const app = express();
+const http = require("http");
 const server = http.createServer(app);
-const io = new Server(server, { cors: { origin: "*" } });
+const { Server } = require("socket.io");
 
-app.use(cors());
-app.use(express.json());
-app.use(express.static(path.join(__dirname, "public")));
-
-mongoose.connect(process.env.MONGO_URI || "mongodb://127.0.0.1/chat_app", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log("✅ MongoDB connected"))
-.catch(err => console.error(err));
-
-// API endpoint to get last messages
-app.get("/messages", async (req, res) => {
-  const msgs = await Message.find().sort({ createdAt: -1 }).limit(50);
-  res.json(msgs.reverse());
+// Setup socket.io with CORS allowed
+const io = new Server(server, {
+  cors: { origin: "*" }
 });
 
+// Serve static files from "public" folder
+app.use(express.static("public"));
+
+// Handle socket connections
 io.on("connection", (socket) => {
-  console.log("🟢 User connected:", socket.id);
+  console.log("✅ A user connected");
 
-  socket.on("join", (username) => {
-    socket.username = username;
-    socket.broadcast.emit("userJoined", { username });
-  });
-
-  socket.on("sendMessage", async (data) => {
-    const msg = new Message({ username: data.username, text: data.message });
-    await msg.save();
-    io.emit("newMessage", msg); // broadcast to all
+  socket.on("chat message", (msg) => {
+    console.log("💬 Message received: " + msg);
+    io.emit("chat message", msg); // broadcast to all users
   });
 
   socket.on("disconnect", () => {
-    console.log("🔴 User disconnected:", socket.id);
+    console.log("❌ A user disconnected");
   });
 });
 
+// Use Render's PORT or 3000 locally
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+server.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});
