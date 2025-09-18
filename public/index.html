@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Chat App</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="chat-container">
+    <ul id="messages"></ul>
+    <form id="form" action="">
+      <input id="input" autocomplete="off" placeholder="Type a message..." />
+      <button id="send">Send</button>
+    </form>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+
+    const form = document.getElementById("form");
+    const input = document.getElementById("input");
+    const messages = document.getElementById("messages");
+
+    // This is the code that asks for the username
+    const username = prompt("Please enter your username:");
+    if (!username) {
+        alert("Username is required to chat.");
+        window.location.reload();
+    }
+
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+      if (input.value) {
+        // Send an object with both username and message
+        const chatMessage = {
+          username: username,
+          text: input.value
+        };
+        socket.emit("chat message", chatMessage);
+        input.value = "";
+      }
+    });
+
+    socket.on("chat message", function(msg) {
+      const item = document.createElement("li");
+      // Display both username and message
+      item.textContent = `${msg.username}: ${msg.text}`;
+      messages.appendChild(item);
+      messages.scrollTop = messages.scrollHeight;
+    });
+  </script>
+</body>
+</html>
