@@ -1,63 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Chat App</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div id="chat-container">
+  <!-- Login Screen -->
+  <div id="login-screen">
+    <h2>Enter your name</h2>
+    <form id="login-form">
+      <input type="text" id="username" placeholder="Your name..." required />
+      <button type="submit">Join</button>
+    </form>
+  </div>
 
+  <!-- Chat Container -->
+  <div id="chat-container">
     <!-- Sidebar -->
     <div id="sidebar">
       <div id="sidebar-header">Chats</div>
-      <div id="chat-list">
-        <div class="chat-item">
-          <img src="https://i.pravatar.cc/40?img=1" alt="User">
-          <div>
-            <div><strong>Khalid Hasan Zibon</strong></div>
-            <div class="last-message">Sup man! How is it going?</div>
-          </div>
-        </div>
-        <div class="chat-item">
-          <img src="https://i.pravatar.cc/40?img=2" alt="User">
-          <div>
-            <div><strong>PewDiePie</strong></div>
-            <div class="last-message">Subscribe to my channel</div>
-          </div>
-        </div>
-        <div class="chat-item">
-          <img src="https://i.pravatar.cc/40?img=3" alt="User">
-          <div>
-            <div><strong>Marzia Mithila</strong></div>
-            <div class="last-message">hi </div>
-          </div>
-        </div>
-      </div>
+      <div id="chat-list"></div>
     </div>
 
-    <!-- Chat Area -->
-    <div id="chat-area">
-      <!-- Header -->
-      <div id="chat-header">
-        <div style="display: flex; align-items: center;">
-          <img src="https://i.pravatar.cc/35?img=3" alt="User">
-          <span><strong>Marzia Mithila</strong></span>
-        </div>
-        <div>
-          <button>📞</button>
-          <button>📹</button>
-        </div>
-      </div>
-
-      <!-- Messages -->
+    <!-- Chat Section -->
+    <div id="chat-section">
       <div class="chat-messages"></div>
-
-      <!-- Input -->
-      <form id="form">
-        <input id="message" autocomplete="off" placeholder="Write a message..." />
-        <button id="send">➤</button>
+      <form id="form" class="chat-form">
+        <input id="message" type="text" placeholder="Write a message..." autocomplete="off" />
+        <button type="submit">Send</button>
       </form>
     </div>
   </div>

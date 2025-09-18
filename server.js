@@ -1,31 +1,58 @@
 const express = require("express");
-const app = express();
 const http = require("http");
-const server = http.createServer(app);
 const { Server } = require("socket.io");
+const path = require("path");
 
-const io = new Server(server, {
-  cors: { origin: "*" }
-});
+const app = express();
+const server = http.createServer(app);
+const io = new Server(server);
 
-app.use(express.static("public"));
+const users = {}; // store connected users { socket.id : username }
+
+// Serve static files (index.html, style.css, script.js)
+app.use(express.static(path.join(__dirname, "public")));
 
 io.on("connection", (socket) => {
-  console.log("✅ A user connected");
+  console.log("New user connected:", socket.id);
 
-  socket.on("chat message", (msg) => {
-    // msg is now an object: { username: "...", text: "..." }
-    console.log(`💬 Message from ${msg.username}: ${msg.text}`);
-    // Broadcast the entire message object
-    io.emit("chat message", msg);
+  // When user joins with name
+  socket.on("join", (username) => {
+    users[socket.id] = username;
+    console.log(`${username} joined the chat`);
+
+    // Send updated user list to everyone
+    io.emit("userList", Object.values(users));
+
+    // Notify others
+    socket.broadcast.emit("chatMessage", {
+      msg: `${username} joined the chat`,
+      user: "System",
+    });
   });
 
+  // Handle chat message
+  socket.on("chatMessage", (data) => {
+    io.emit("chatMessage", data); // broadcast to all
+  });
+
+  // When user disconnects
   socket.on("disconnect", () => {
-    console.log("❌ A user disconnected");
+    const username = users[socket.id];
+    delete users[socket.id];
+    console.log(`${username} disconnected`);
+
+    // Update user list
+    io.emit("userList", Object.values(users));
+
+    // Notify others
+    if (username) {
+      socket.broadcast.emit("chatMessage", {
+        msg: `${username} left the chat`,
+        user: "System",
+      });
+    }
   });
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-});
+server.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));

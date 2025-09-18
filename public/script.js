@@ -1,30 +1,51 @@
-const socket = io(); // Connect to server
-const chatMessages = document.querySelector(".chat-messages");
-const chatForm = document.querySelector("form");
-const chatInput = document.querySelector("#message");
+const socket = io();
 
-// Function to add a message to chat
+let currentUser = null;
+const chatMessages = document.querySelector(".chat-messages");
+const chatForm = document.querySelector("#form");
+const chatInput = document.querySelector("#message");
+const loginForm = document.querySelector("#login-form");
+const loginScreen = document.querySelector("#login-screen");
+const chatContainer = document.querySelector("#chat-container");
+const chatList = document.querySelector("#chat-list");
+
+// Login
+loginForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const username = document.querySelector("#username").value.trim();
+  if (!username) return;
+
+  currentUser = username;
+  socket.emit("join", username);
+
+  loginScreen.style.display = "none";
+  chatContainer.style.display = "flex";
+});
+
+// Add user to sidebar
+function addUserToSidebar(username) {
+  const div = document.createElement("div");
+  div.classList.add("chat-item");
+  div.innerHTML = `
+    <img src="https://i.pravatar.cc/40?u=${username}" alt="User">
+    <div><strong>${username}</strong></div>
+  `;
+  chatList.appendChild(div);
+}
+
+// Add message to chat
 function addMessage(message, type, userId) {
   const div = document.createElement("div");
   div.classList.add("message", type);
 
-  // Avatar
-  const avatar = document.createElement("div");
+  const avatar = document.createElement("img");
+  avatar.src = `https://i.pravatar.cc/35?u=${userId}`;
   avatar.classList.add("avatar");
 
-  // 🎨 Optional: give each user a unique color
-  if (userId) {
-    const colors = ["#f54242", "#4287f5", "#42f57b", "#f5a742", "#9b42f5"];
-    let color = colors[userId.charCodeAt(0) % colors.length];
-    avatar.style.background = color;
-  }
-
-  // Bubble
   const bubble = document.createElement("div");
   bubble.classList.add("bubble");
   bubble.textContent = message;
 
-  // Order (sent: bubble first, received: avatar first)
   if (type === "sent") {
     div.appendChild(bubble);
     div.appendChild(avatar);
@@ -34,7 +55,7 @@ function addMessage(message, type, userId) {
   }
 
   chatMessages.appendChild(div);
-  chatMessages.scrollTop = chatMessages.scrollHeight; // auto scroll
+  chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
 // Send message
@@ -43,17 +64,20 @@ chatForm.addEventListener("submit", (e) => {
   const msg = chatInput.value.trim();
   if (!msg) return;
 
-  // Show my message
-  addMessage(msg, "sent", "me");
-
-  // Send to server
-  socket.emit("chatMessage", msg);
+  addMessage(msg, "sent", currentUser);
+  socket.emit("chatMessage", { msg, user: currentUser });
 
   chatInput.value = "";
-  chatInput.focus();
 });
 
 // Receive message
 socket.on("chatMessage", (data) => {
-  addMessage(data.msg, "received", data.userId || "other");
+  if (data.user !== currentUser) {
+    addMessage(data.msg, "received", data.user);
+  }
+});
+
+// When new user joins
+socket.on("userJoined", (username) => {
+  addUserToSidebar(username);
 });
