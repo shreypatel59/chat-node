@@ -1,126 +1,161 @@
-/* Page setup */
 body {
-  font-family: 'Segoe UI', Arial, sans-serif;
-  background: #f0f2f5;
+  margin: 0;
+  font-family: Arial, sans-serif;
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  margin: 0;
+  background: #87aee1; /* soft background */
 }
 
-/* Chat container */
 #chat-container {
-  width: 400px;
+  display: flex;
+  width: 900px;
   height: 600px;
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+}
+
+/* Sidebar */
+#sidebar {
+  width: 300px;
+  background: #0d1b2a;
+  color: white;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
 }
 
-/* Message area */
-#messages {
-  list-style-type: none;
-  margin: 0;
-  padding: 15px;
+#sidebar-header {
+  padding: 20px;
+  font-size: 18px;
+  font-weight: bold;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+#chat-list {
   flex: 1;
   overflow-y: auto;
-  background: #ece5dd; /* WhatsApp-style bg */
+}
+
+.chat-item {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.chat-item:hover {
+  background: rgba(255,255,255,0.05);
+}
+
+.chat-item img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 12px;
+}
+
+.last-message {
+  font-size: 12px;
+  color: #bbb;
+}
+
+/* Chat Area */
+#chat-area {
+  flex: 1;
+  background: white;
   display: flex;
   flex-direction: column;
-  gap: 6px;
 }
 
-/* Common message style */
-#messages li {
-  padding: 10px 14px;
+#chat-header {
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #ddd;
+  background: #f9f9f9;
+}
+
+#chat-header img {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+/* Messages */
+.chat-messages {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.message {
+  display: flex;
+  align-items: flex-end;
+}
+
+.message.sent {
+  justify-content: flex-end;
+}
+
+.message .avatar {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  background: #ddd;
+  margin: 0 8px;
+}
+
+.bubble {
+  padding: 12px 16px;
   border-radius: 18px;
-  max-width: 70%;
-  word-wrap: break-word;
-  font-size: 0.95em;
-  position: relative;
-  line-height: 1.4em;
+  max-width: 60%;
+  font-size: 14px;
+  line-height: 1.4;
 }
 
-/* Sent by me (right side) */
-#messages li.self {
-  align-self: flex-end;
-  background: #dcf8c6;
-  border-bottom-right-radius: 4px;
+.message.sent .bubble {
+  background: #007bff;
+  color: white;
+  border-bottom-right-radius: 5px;
 }
 
-/* Sent by others (left side) */
-#messages li.other {
-  align-self: flex-start;
-  background: #fff;
-  border-bottom-left-radius: 4px;
+.message.received .bubble {
+  background: #f1f0f0;
+  color: #333;
+  border-bottom-left-radius: 5px;
 }
 
-/* Username above bubble */
-#messages li .username {
-  display: block;
-  font-weight: bold;
-  font-size: 0.8em;
-  margin-bottom: 3px;
-  color: #555;
-}
-
-/* Timestamp inside bubble */
-#messages li .timestamp {
-  display: block;
-  font-size: 0.7em;
-  color: #888;
-  margin-top: 4px;
-  text-align: right;
-}
-
-/* Input area */
+/* Input */
 #form {
   display: flex;
-  padding: 10px;
-  background: #f0f0f0;
+  padding: 15px;
   border-top: 1px solid #ddd;
-  align-items: center;
+  background: #fafafa;
 }
 
-/* Textbox */
-#input {
+#message {
   flex: 1;
-  padding: 10px 15px;
-  border: none;
-  border-radius: 20px;
-  font-size: 1em;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 25px;
   outline: none;
-  background: #fff;
-  box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
 }
 
-/* Send button */
 #send {
-  margin-left: 10px;
-  padding: 0 14px;
-  height: 40px;
+  background: #007bff;
   border: none;
+  color: white;
+  padding: 0 18px;
+  margin-left: 10px;
   border-radius: 50%;
-  background: #0084ff;
-  color: #fff;
-  font-weight: bold;
+  font-size: 18px;
   cursor: pointer;
-  transition: background 0.3s;
-}
-
-#send:hover {
-  background: #006bbf;
-}
-
-/* Scrollbar style */
-#messages::-webkit-scrollbar {
-  width: 6px;
-}
-#messages::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
 }
